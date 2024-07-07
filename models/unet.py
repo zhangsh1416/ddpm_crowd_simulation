@@ -42,7 +42,9 @@ class UNet1D(nn.Module):
         t_emb = self.time_embedding(t_emb)
         t_emb = t_emb.view(t_emb.size(0), t_emb.size(1), 1)
         t_emb = t_emb.repeat(1, 1, x.size(2))
+        # print("t_emb.shape:", t_emb.shape)
         x = torch.cat([x, t_emb], dim=1)
+        # print("x.shape:", x.shape)
 
         # Encoder
         enc1 = self.enc1(x)  # (B, 64, 100)

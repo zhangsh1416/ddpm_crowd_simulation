@@ -57,8 +57,12 @@ def save_samples_to_csv(samples, output_file, data_min, data_max):
 if __name__ == "__main__":
     file_path = './dataset/pedestrians_positions_MI.csv'
     dataloader, data_min, data_max = load_and_preprocess_data(file_path, batch_size=32)
+    t = torch.randint(0, 1000, (32,))
+    embedding_dims = 256
+    t_emb = get_sinusoidal_embeddings(t, embedding_dims, device=torch.device('cpu'))
+    print("t_emb.shape:",t_emb.shape)
     for batch in dataloader:
         # batch[0].shape = torch.Size([32, 2, 100]), because is not directly a tensor, but a tuple of tensors, there could be labels in the second element of the tuple.
-        print(batch[0].shape)
+        print("batch's shape:",batch[0].shape)
         visualize_samples(batch[0][:10])
         break

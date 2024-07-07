@@ -7,7 +7,7 @@ from utils import load_and_preprocess_data, q_sample, visualize_samples
 from models.unet import UNet1D
 
 # Training function with time embedding
-def train_ddpm(model, dataloader, num_epochs=200, save_interval=50, sample_interval=10):
+def train_ddpm(model, dataloader, num_epochs=200, save_interval=5, sample_interval=10):
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     losses = []
@@ -50,7 +50,7 @@ def train_ddpm(model, dataloader, num_epochs=200, save_interval=50, sample_inter
 
         # Save model weights at intervals
         if (epoch + 1) % save_interval == 0:
-            weight_path = f'ddpm_unet1d_weights_epoch_{epoch + 1}.pth'
+            weight_path = f'./CheckPoints/ddpm_unet1d_weights_epoch_{epoch + 1}.pth'
             torch.save(model.state_dict(), weight_path)
             print(f"Model weights saved to '{weight_path}'")
 
