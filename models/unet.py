@@ -2,7 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from utils import get_sinusoidal_embeddings
-
+"""
+Implementation of a 1D U-Net model for time series forecasting.
+The model consists of an encoder and a decoder, with skip connections between corresponding encoder and decoder layers.
+The encoder downsamples the input time series, while the decoder upsamples the encoded representation to generate the output.
+The model also includes a time embedding layer to incorporate temporal information.
+"""
 class UNet1D(nn.Module):
     def __init__(self, in_channels=2, out_channels=2, time_emb_dim=256):
         super(UNet1D, self).__init__()
@@ -67,13 +72,13 @@ class UNet1D(nn.Module):
         _, _, L = x.size()
         enc_feature = F.interpolate(enc_feature, size=L, mode='linear', align_corners=True)
         return enc_feature
-
+# Test the model, and print the output shape, given a random input tensor, and a random time tensor.
 if __name__ == "__main__":
-    # 测试网络
-    B = 32  # 批次大小
-    input_data = torch.randn(B, 2, 100)  # 创建形状为 (B, 2, 100) 的输入数据
-    t = torch.randint(0, 1000, (B,))  # 创建形状为 (B,) 的时间步
-    print(t.shape,  input_data.shape)
+    # test the model
+    B = 1  # batch size
+    input_data = torch.randn(B, 2, 100)  # create a random input tensor with shape (B, 2, 100)
+    t = torch.randint(0, 1000, (B,))  # create a random time tensor with shape (B,)
+    print(t.shape,  input_data.shape) # print the shapes of the input tensor and the time tensor
     model = UNet1D()
     output = model(input_data, t)
-    print("Output shape:", output.shape)
+    print("Output shape:", output.shape) # print the shape of the output tensor

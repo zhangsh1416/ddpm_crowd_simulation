@@ -5,7 +5,11 @@ import torch.optim as optim
 from tqdm import tqdm
 from utils import load_and_preprocess_data, q_sample, visualize_samples
 from models.unet import UNet1D
-
+"""
+Training function for the DDPM model with time embedding.
+The model is trained using the specified dataloader for a specified number of epochs.
+The model is saved at regular intervals, and the loss curve is plotted at the end of training.
+"""
 # Training function with time embedding
 def train_ddpm(model, dataloader, num_epochs=200, save_interval=5, sample_interval=10):
     criterion = nn.MSELoss()
@@ -42,11 +46,12 @@ def train_ddpm(model, dataloader, num_epochs=200, save_interval=5, sample_interv
         if (epoch + 1) % sample_interval == 0:
             model.eval()
             with torch.no_grad():
-                x = torch.randn(1, 1, 200, device=device)
+                x = torch.randn(1, 2, 100, device=device)
                 for t_ in reversed(range(T)):
                     t_tensor = torch.full((1,), t_, device=device, dtype=torch.long)
                     x = model(x, t_tensor)
-                visualize_samples([x.squeeze().cpu().numpy()])
+                    x = x * (data_max - data_min) + data_min
+                visualize_samples(x)
 
         # Save model weights at intervals
         if (epoch + 1) % save_interval == 0:
@@ -64,13 +69,14 @@ def train_ddpm(model, dataloader, num_epochs=200, save_interval=5, sample_interv
     plt.show()
 
     # Save final model weights
-    final_weight_path = 'ddpm_unet1d_weights_final.pth'
+    final_weight_path = './CheckPoints/ddpm_unet1d_weights_final.pth'
     torch.save(model.state_dict(), final_weight_path)
     print(f"Final model weights saved to '{final_weight_path}'")
 
-# Example usage
+# Training the model, and saving the final weights, and the loss curve, at the end of training, and visualizing the generated samples at regular intervals during training.
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
     T = 1000
     beta_t = torch.linspace(0.0001, 0.02, T, device=device)
 
